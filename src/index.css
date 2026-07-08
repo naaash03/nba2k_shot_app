@@ -1,0 +1,28 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Court-side palette (spec §11.1): near-black court tones, one high-signal
+     green reserved for greens/success only, one warm accent for streaks/heat. */
+  --color-court-950: #0a0f0c;
+  --color-court-900: #101712;
+  --color-court-800: #1a231c;
+  --color-court-line: #2e3a31;
+  --color-chalk: #e8ece9;
+  --color-chalk-dim: #9aa69d;
+  --color-green-signal: #2eff6e;
+  --color-heat: #ffb03a;
+
+  --font-display: 'Arial Narrow', 'Helvetica Neue Condensed', ui-sans-serif, system-ui, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  background-color: var(--color-court-950);
+  color: var(--color-chalk);
+  overscroll-behavior: none;
+}
+
+#root {
+  min-height: 100dvh;
+}
