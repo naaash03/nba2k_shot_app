@@ -26,3 +26,19 @@ body {
 #root {
   min-height: 100dvh;
 }
+
+@keyframes verdict-pop {
+  0% {
+    transform: scale(1.15);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Range inputs on the court theme */
+input[type='range'] {
+  height: 28px;
+}
