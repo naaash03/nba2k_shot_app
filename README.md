@@ -14,8 +14,15 @@ spec. Development proceeds strictly by its §17 phase plan.
 ## Status
 
 - ✅ Phase 0 — app shell deployed via GitHub Pages
-- ✅ Phase 1 — timing engine (`src/engine/`, pure TS, ≥95% test coverage)
-- ⏳ Phase 2 — the practice loop (hold-release SHOOT + canvas meter)
+- ✅ Phase 1 — timing engine (`src/engine/`, pure TS, 100% test coverage)
+- ✅ Phase 2 — practice loop (hold-release SHOOT, canvas meter, verdicts)
+- ✅ Phase 3 — build manager + editor + share codes
+- ✅ Phase 4 — calibration suite (latency wizard, timing methods A/B/C, trim)
+- ✅ Phase 5 — stats (histogram, trend, bias suggestion)
+- ✅ Phase 6 — court mode (zones, heat map, drills)
+- ✅ Phase 7 — move timing (chips, per-move calibration, Mixtape)
+- ✅ Phase 8 — polish (onboarding, settings, Ring meter, backup)
+- ⏳ v1.0 tag — pending the ground-truth session (spec §15.4): green rates in-app vs in-game
 
 ## Development
 
