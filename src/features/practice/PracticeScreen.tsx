@@ -159,6 +159,14 @@ export function PracticeScreen({ onOpenBuilds }: { onOpenBuilds: () => void }) {
             onClick={() =>
               settings.set({
                 moveType: m,
+                // FT move and FT spot travel together — a stepback "from the
+                // FT line zone" would silently use the FT window profile.
+                zoneId:
+                  m === 'FreeThrow'
+                    ? 'freeThrow'
+                    : settings.zoneId === 'freeThrow'
+                      ? null
+                      : settings.zoneId,
                 drill: settings.drill === 'mixtape' ? 'free' : settings.drill,
               })
             }
@@ -190,6 +198,7 @@ export function PracticeScreen({ onOpenBuilds }: { onOpenBuilds: () => void }) {
           shotStartRef={machine.shotStartRef}
           releaseElapsedRef={machine.releaseElapsedRef}
           phase={machine.phase}
+          deviceOffsetMs={deviceProfile?.deviceOffsetMs ?? 0}
         />
       </div>
 

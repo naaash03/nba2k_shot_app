@@ -27,6 +27,10 @@ interface MeterProps {
   shotStartRef: React.RefObject<number>
   releaseElapsedRef: React.RefObject<number>
   phase: ShotPhase // re-render trigger only; drawing reads refs
+  /** Device latency offset — the meter renders the JUDGED timeline, so the
+   *  ball's position always matches what the verdict will say (ball in the
+   *  band ⇔ GREEN). Recalibrating visibly shifts the meter. */
+  deviceOffsetMs?: number
 }
 
 export function Meter({
@@ -37,6 +41,7 @@ export function Meter({
   shotStartRef,
   releaseElapsedRef,
   phase,
+  deviceOffsetMs = 0,
 }: MeterProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const timingRef = useRef(timing)
@@ -45,6 +50,8 @@ export function Meter({
   styleRef.current = style
   const visibleRef = useRef(meterVisible)
   visibleRef.current = meterVisible
+  const offsetRef = useRef(deviceOffsetMs)
+  offsetRef.current = deviceOffsetMs
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -65,13 +72,15 @@ export function Meter({
       const t = timingRef.current
       const totalMs = t.idealMs + LATE_CUTOFF
       const ph = phaseRef.current
+      // Judged timeline: raw wall-clock elapsed minus the device offset, the
+      // same subtraction judgeShot sees. releaseElapsedRef is already judged.
       const elapsed =
         ph === 'WINDUP'
-          ? performance.now() - shotStartRef.current
+          ? performance.now() - shotStartRef.current - offsetRef.current
           : ph === 'JUDGED'
             ? releaseElapsedRef.current
             : 0
-      const progress = Math.min(elapsed / totalMs, 1)
+      const progress = Math.max(Math.min(elapsed / totalMs, 1), 0)
       const idealPos = t.idealMs / totalMs
       const bandHalf = t.greenWindowMs / 2 / totalMs
 

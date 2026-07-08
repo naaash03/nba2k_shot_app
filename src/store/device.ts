@@ -2,6 +2,7 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { clamp } from '../engine/constants'
 import type { DeviceProfile } from '../engine/types'
 
 interface DeviceState {
@@ -10,14 +11,27 @@ interface DeviceState {
   clearProfile: () => void
 }
 
+// Touch latency is physically positive; strongly negative saved offsets came
+// from anticipatory tapping in early wizard runs and would skew judgments.
+function sanitize(p: DeviceProfile | null): DeviceProfile | null {
+  return p ? { ...p, deviceOffsetMs: clamp(p.deviceOffsetMs, -40, 160) } : null
+}
+
 export const useDevice = create<DeviceState>()(
   persist(
     (set) => ({
       profile: null,
-      setProfile: (profile) => set({ profile }),
+      setProfile: (profile) => set({ profile: sanitize(profile) }),
       clearProfile: () => set({ profile: null }),
     }),
-    { name: 'gr:device', version: 1 },
+    {
+      name: 'gr:device',
+      version: 2,
+      migrate: (state) => {
+        const s = state as DeviceState
+        return { ...s, profile: sanitize(s.profile ?? null) }
+      },
+    },
   ),
 )
 

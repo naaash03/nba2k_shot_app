@@ -3,6 +3,7 @@
 // Judged releases subtract this offset so touch lag doesn't poison timing.
 
 import { useEffect, useRef, useState } from 'react'
+import { clamp } from '../../engine/constants'
 import type { DeviceProfile } from '../../engine/types'
 import { eventTime } from '../../lib/time'
 import { Button } from '../../components/ui'
@@ -64,7 +65,10 @@ export function LatencyWizard({ onDone }: { onDone: () => void }) {
     const q1 = offsets[Math.floor(offsets.length * 0.25)] ?? 0
     const q3 = offsets[Math.floor(offsets.length * 0.75)] ?? 0
     const jitter = (q3 - q1) / 2
-    setResult({ offset: median, jitter })
+    // Touch latency is physically positive (~30–90ms). A strongly negative
+    // median means the user anticipated the beat, not device lag — clamp so a
+    // bad test can't poison shot timing (R2/R3).
+    setResult({ offset: clamp(median, -40, 160), jitter })
     setStage('done')
   }
 
@@ -140,6 +144,12 @@ export function LatencyWizard({ onDone }: { onDone: () => void }) {
               ? 'That jitter is high — consider re-running somewhere you can focus.'
               : 'Nice and steady.'}
           </p>
+          {result.offset < -15 && (
+            <p className="max-w-xs rounded-lg bg-court-900 px-3 py-2 text-xs text-heat">
+              Negative offset usually means you tapped ahead of the beat (anticipating). Try
+              re-running and tapping exactly when the ring peaks — or save 0 by skipping if unsure.
+            </p>
+          )}
           <Button onClick={save}>Save & apply to judgments</Button>
           <Button variant="ghost" onClick={start}>
             Re-run

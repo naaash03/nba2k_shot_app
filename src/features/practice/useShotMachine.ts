@@ -75,7 +75,10 @@ export function useShotMachine(
         },
         Math.random,
       )
-      releaseElapsedRef.current = rawHoldMs
+      // Freeze the meter at the JUDGED duration, not the raw one — the ball
+      // must stop exactly where the verdict says it stopped (Δ from the
+      // notch == verdict.deltaMs), so ball-in-band ⇔ GREEN by construction.
+      releaseElapsedRef.current = rawHoldMs - offset
       phaseRef.current = 'JUDGED'
       setPhase('JUDGED')
       setVerdict(v)
@@ -99,9 +102,11 @@ export function useShotMachine(
       phaseRef.current = 'WINDUP'
       setPhase('WINDUP')
       setVerdict(null)
-      // Dead-rep deadline (F3.5): judged from the deterministic timeline, not the timer's firing time.
-      const deadline = timingRef.current.idealMs + LATE_CUTOFF
-      deadlineTimer.current = setTimeout(() => judge(deadline + 1), deadline + 15)
+      // Dead-rep deadline (F3.5): judged from the deterministic timeline, not
+      // the timer's firing time. The deadline is on the judged timeline, so
+      // the raw hold it corresponds to is offset-shifted.
+      const rawDeadline = timingRef.current.idealMs + LATE_CUTOFF + offsetRef.current
+      deadlineTimer.current = setTimeout(() => judge(rawDeadline + 1), rawDeadline + 15)
     },
     [judge],
   )

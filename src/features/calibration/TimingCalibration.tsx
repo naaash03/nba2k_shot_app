@@ -409,6 +409,7 @@ function FeelMatching({
           shotStartRef={machine.shotStartRef}
           releaseElapsedRef={machine.releaseElapsedRef}
           phase={machine.phase}
+          deviceOffsetMs={deviceProfile?.deviceOffsetMs ?? 0}
         />
       </div>
       <VerdictOverlay verdict={machine.verdict} />
